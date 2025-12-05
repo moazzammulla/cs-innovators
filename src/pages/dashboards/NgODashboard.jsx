@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
 import StatusBadge from '../../components/ui/StatusBadge';
+import AISuggestionsPanel from '../../components/ngo/AISuggestionsPanel';
 import { fetchNgoNearbySurplus } from '../../utils/api';
 
 const NgODashboard = () => {
@@ -56,10 +57,16 @@ const NgODashboard = () => {
             </div>
           ))}
         </div>
-        <div className="card">
-          <p className="mb-2 text-xs font-medium text-secondary">Map View (Placeholder)</p>
-          <div className="flex h-52 items-center justify-center rounded-xl border border-dashed border-primary/30 bg-primary/5 text-[11px] text-primary">
-            Interactive map coming soon...
+        <div className="space-y-4">
+          {/* AI Suggestions Panel */}
+          <AISuggestionsPanel availableSurplus={surplusList} />
+
+          {/* Map View */}
+          <div className="card">
+            <p className="mb-2 text-xs font-medium text-secondary">Map View (Placeholder)</p>
+            <div className="flex h-52 items-center justify-center rounded-xl border border-dashed border-primary/30 bg-primary/5 text-[11px] text-primary">
+              Interactive map coming soon...
+            </div>
           </div>
         </div>
       </div>

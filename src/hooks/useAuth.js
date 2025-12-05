@@ -12,3 +12,4 @@ export function useAuth() {
 
   return { user, login, logout };
 }
+

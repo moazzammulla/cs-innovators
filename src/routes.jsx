@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRoutes, Navigate } from 'react-router-dom';
+import { useRoutes, Navigate, useLocation } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -10,15 +10,32 @@ import PickupTrackingPage from './pages/PickupTrackingPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import AdminPanel from './pages/AdminPanel';
 import MainLayout from './layouts/MainLayout';
-import DashboardLayout from './layouts/DashboardLayout';
+import CanteenDashboardLayout from './layouts/CanteenDashboardLayout';
+import NgODashboardLayout from './layouts/NgODashboardLayout';
 
 function PublicLayoutRoute({ children }) {
   return <MainLayout>{children}</MainLayout>;
 }
 
+function CanteenRoute({ children }) {
+  return <CanteenDashboardLayout>{children}</CanteenDashboardLayout>;
+}
+
+function NgORoute({ children }) {
+  return <NgODashboardLayout>{children}</NgODashboardLayout>;
+}
+
 function PrivateDashboardRoute({ children }) {
-  // In a real app, you would check auth/role here.
-  return <DashboardLayout>{children}</DashboardLayout>;
+  // Determine layout based on current path
+  const location = useLocation();
+  const path = location.pathname;
+  
+  if (path.startsWith('/ngo/')) {
+    return <NgODashboardLayout>{children}</NgODashboardLayout>;
+  }
+  
+  // Default to Canteen layout for canteen routes and shared pages
+  return <CanteenDashboardLayout>{children}</CanteenDashboardLayout>;
 }
 
 export function AppRoutes() {
@@ -50,25 +67,25 @@ export function AppRoutes() {
     {
       path: '/canteen/dashboard',
       element: (
-        <PrivateDashboardRoute>
+        <CanteenRoute>
           <CanteenDashboard />
-        </PrivateDashboardRoute>
+        </CanteenRoute>
       ),
     },
     {
       path: '/ngo/dashboard',
       element: (
-        <PrivateDashboardRoute>
+        <NgORoute>
           <NgODashboard />
-        </PrivateDashboardRoute>
+        </NgORoute>
       ),
     },
     {
       path: '/canteen/add-surplus',
       element: (
-        <PrivateDashboardRoute>
+        <CanteenRoute>
           <AddSurplusPage />
-        </PrivateDashboardRoute>
+        </CanteenRoute>
       ),
     },
     {
