@@ -1,0 +1,71 @@
+{
+  "version": "2.0.0",
+  "data": [
+    {
+      "name": "Get NGOs by Pincode",
+      "method": "get",
+      "endpoint": "/api/ngos",
+      "responses": [
+        {
+          "statusCode": 200,
+          "label": "NGOs found",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"ngos\": [\n    {\n      \"id\": 1,\n      \"name\": \"HopeForAll Foundation\",\n      \"pincode\": \"560001\",\n      \"address\": \"123 Main Street, Bangalore, Karnataka 560001\",\n      \"contactPerson\": \"Rajesh Kumar\",\n      \"phone\": \"+91 98765 43210\",\n      \"email\": \"contact@hopeforall.org\",\n      \"distance\": \"1.2 km\",\n      \"capacity\": \"50 kg/day\",\n      \"specialties\": [\n        \"Food Distribution\",\n        \"Community Meals\"\n      ]\n    },\n    {\n      \"id\": 2,\n      \"name\": \"HungerFree India\",\n      \"pincode\": \"560001\",\n      \"address\": \"456 Park Avenue, Bangalore, Karnataka 560001\",\n      \"contactPerson\": \"Priya Sharma\",\n      \"phone\": \"+91 98765 43211\",\n      \"email\": \"info@hungerfree.in\",\n      \"distance\": \"2.5 km\",\n      \"capacity\": \"75 kg/day\",\n      \"specialties\": [\n        \"Emergency Food\",\n        \"Daily Meals\"\n      ]\n    },\n    {\n      \"id\": 3,\n      \"name\": \"MealsOnWheels NGO\",\n      \"pincode\": \"560001\",\n      \"address\": \"789 MG Road, Bangalore, Karnataka 560001\",\n      \"contactPerson\": \"Amit Patel\",\n      \"phone\": \"+91 98765 43212\",\n      \"email\": \"contact@mealsonwheels.org\",\n      \"distance\": \"3.1 km\",\n      \"capacity\": \"100 kg/day\",\n      \"specialties\": [\n        \"Mobile Distribution\",\n        \"Senior Care\"\n      ]\n    }\n  ],\n  \"count\": 3\n}",
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "pincode",
+              "value": "560001",
+              "operator": "equals"
+            }
+          ]
+        },
+        {
+          "statusCode": 200,
+          "label": "No NGOs found",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"ngos\": [],\n  \"count\": 0,\n  \"message\": \"No NGOs found for the given pincode\"\n}",
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "pincode",
+              "value": "999999",
+              "operator": "equals"
+            }
+          ]
+        },
+        {
+          "statusCode": 400,
+          "label": "Missing pincode",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"error\": \"Pincode is required\",\n  \"message\": \"Please provide a valid pincode\"\n}",
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "pincode",
+              "value": "",
+              "operator": "equals"
+            }
+          ]
+        }
+      ],
+      "documentation": "Fetches NGOs based on pincode. Returns a list of NGOs with their contact details, address, and capacity."
+    }
+  ]
+}
+

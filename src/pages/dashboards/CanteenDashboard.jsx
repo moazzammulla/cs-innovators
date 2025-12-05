@@ -4,16 +4,27 @@ import DashboardCard from '../../components/ui/DashboardCard';
 import StatusBadge from '../../components/ui/StatusBadge';
 import ChartComponent from '../../components/charts/ChartComponent';
 import Button from '../../components/ui/Button';
+import InputField from '../../components/ui/InputField';
+import NgoCard from '../../components/canteen/NgoCard';
+import AINgoRecommendation from '../../components/canteen/AINgoRecommendation';
 import {
   fetchTodaysSurplus,
   fetchCanteenSurplusPosts,
   fetchAnalytics,
+  fetchNgosByPincode,
 } from '../../utils/api';
+import { recommendBestNgo, isAIServiceAvailable } from '../../utils/aiService';
 
 const CanteenDashboard = () => {
   const [todaySurplus, setTodaySurplus] = useState(0);
   const [posts, setPosts] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
+  const [pincode, setPincode] = useState('');
+  const [ngos, setNgos] = useState([]);
+  const [isLoadingNgos, setIsLoadingNgos] = useState(false);
+  const [searchError, setSearchError] = useState('');
+  const [aiRecommendation, setAiRecommendation] = useState(null);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -100,6 +111,123 @@ const CanteenDashboard = () => {
           </p>
           <ChartComponent type="bar" data={weeklyData} dataKey="value" nameKey="name" />
         </div>
+      </div>
+
+      {/* Find Nearest NGO Section */}
+      <div className="card space-y-4">
+        <div>
+          <h2 className="text-base font-semibold text-secondary">Find Nearest NGO</h2>
+          <p className="text-xs text-gray-500 mt-1">
+            Search for NGOs in your area by entering your pincode
+          </p>
+        </div>
+
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!pincode.trim()) {
+              setSearchError('Please enter a pincode');
+              return;
+            }
+            setIsLoadingNgos(true);
+            setSearchError('');
+            setAiRecommendation(null);
+            try {
+              const results = await fetchNgosByPincode(pincode.trim());
+              setNgos(results);
+              if (results.length === 0) {
+                setSearchError('No NGOs found for this pincode');
+              } else if (results.length > 0) {
+                // Get AI recommendation if AI service is available
+                if (isAIServiceAvailable()) {
+                  setIsLoadingAI(true);
+                  try {
+                    const recommendation = await recommendBestNgo({
+                      ngos: results,
+                      canteenContext: {
+                        todaySurplus: todaySurplus,
+                        pincode: pincode.trim(),
+                      },
+                    });
+                    setAiRecommendation(recommendation);
+                  } catch (error) {
+                    console.error('Error getting AI recommendation:', error);
+                    // Continue without AI recommendation
+                  } finally {
+                    setIsLoadingAI(false);
+                  }
+                }
+              }
+            } catch (error) {
+              console.error('Error fetching NGOs:', error);
+              setSearchError('Failed to fetch NGOs. Please try again.');
+            } finally {
+              setIsLoadingNgos(false);
+            }
+          }}
+          className="flex gap-2"
+        >
+          <div className="flex-1">
+            <InputField
+              label="Enter Pincode"
+              name="pincode"
+              type="text"
+              placeholder="e.g., 560001"
+              value={pincode}
+              onChange={(e) => {
+                setPincode(e.target.value);
+                setSearchError('');
+              }}
+              maxLength={6}
+              pattern="[0-9]{6}"
+              error={searchError}
+            />
+          </div>
+          <div className="flex items-end">
+            <Button type="submit" disabled={isLoadingNgos}>
+              {isLoadingNgos ? 'Searching...' : 'Search'}
+            </Button>
+          </div>
+        </form>
+
+        {/* AI Recommendation */}
+        {(isLoadingAI || aiRecommendation) && (
+          <div className="space-y-3">
+            <AINgoRecommendation
+              recommendation={aiRecommendation}
+              isLoading={isLoadingAI}
+            />
+          </div>
+        )}
+
+        {/* NGO Results */}
+        {ngos.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-medium text-secondary">
+                {aiRecommendation
+                  ? `All ${ngos.length} NGO${ngos.length > 1 ? 's' : ''} nearby`
+                  : `Found ${ngos.length} NGO${ngos.length > 1 ? 's' : ''} nearby`}
+              </p>
+              {!isAIServiceAvailable() && (
+                <span className="text-[10px] text-gray-400">
+                  AI recommendations unavailable
+                </span>
+              )}
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {ngos.map((ngo) => (
+                <NgoCard key={ngo.id} ngo={ngo} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {searchError && ngos.length === 0 && (
+          <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-3 text-xs text-yellow-800">
+            {searchError}
+          </div>
+        )}
       </div>
     </div>
   );

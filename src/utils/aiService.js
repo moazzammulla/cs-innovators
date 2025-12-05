@@ -24,6 +24,50 @@ function getModel(modelName = DEFAULT_MODEL) {
 }
 
 /**
+ * Extract JSON from response text, handling markdown code blocks
+ * @param {string} text - Response text that may contain JSON in markdown code blocks
+ * @returns {string|null} Extracted JSON string or null if not found
+ */
+function extractJSON(text) {
+  if (!text) return null;
+  
+  // First, try to extract JSON from markdown code blocks
+  // Match ```json ... ``` or ``` ... ```
+  const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch && codeBlockMatch[1]) {
+    const jsonString = codeBlockMatch[1].trim();
+    // Verify it looks like JSON
+    if (jsonString.startsWith('{') || jsonString.startsWith('[')) {
+      return jsonString;
+    }
+  }
+  
+  // If no code block found, try to find JSON object directly
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    return jsonMatch[0];
+  }
+  
+  return null;
+}
+
+/**
+ * Parse JSON from response text, handling markdown code blocks
+ * @param {string} text - Response text that may contain JSON in markdown code blocks
+ * @returns {Object|null} Parsed JSON object or null if parsing fails
+ */
+function parseJSONResponse(text) {
+  try {
+    const jsonString = extractJSON(text);
+    if (!jsonString) return null;
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error('Error parsing JSON response:', error);
+    return null;
+  }
+}
+
+/**
  * Generate AI response from a prompt
  * @param {string} prompt - The prompt to send to AI
  * @param {Object} options - Additional options
@@ -113,9 +157,9 @@ Example response:
   try {
     const response = await generateAIResponse(prompt);
     // Try to parse JSON from response
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     // Fallback if JSON parsing fails
     return {
@@ -173,9 +217,9 @@ Example response:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     return {
       prioritizedItems: [],
@@ -236,9 +280,9 @@ Example response:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     return {
       insights: [response],
@@ -304,9 +348,9 @@ Example response:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     return {
       safetyStatus: 'caution',
@@ -364,9 +408,9 @@ Required JSON format:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     return {
       riskLevel: 'medium',
@@ -427,9 +471,9 @@ Required JSON format:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     return {
       optimalRoute: [],
@@ -493,9 +537,9 @@ Required JSON format:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     // Fallback calculation
     const portionsPerPerson = context.mealType === 'breakfast' ? 0.8 : context.mealType === 'dinner' ? 1.2 : 1.0;
@@ -562,9 +606,9 @@ Required JSON format:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     return {
       nutritionalValue: {},
@@ -632,9 +676,9 @@ Required JSON format:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     return {
       suggestedMeals: [],
@@ -699,9 +743,9 @@ Required JSON format:
 
   try {
     const response = await generateAIResponse(prompt);
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    const parsed = parseJSONResponse(response);
+    if (parsed) {
+      return parsed;
     }
     const peopleFed = context.numberOfPeople || 0;
     return {
@@ -748,6 +792,137 @@ export async function listAvailableModels() {
     console.warn('Could not list models, using default:', error);
     return [DEFAULT_MODEL];
   }
+}
+
+/**
+ * Recommend the best NGO from a list of nearby NGOs
+ * @param {Object} context - Context for NGO recommendation
+ * @param {Array} context.ngos - Array of NGO objects
+ * @param {Object} context.canteenContext - Optional canteen context (surplus quantity, food type, etc.)
+ * @returns {Promise<Object>} Recommendation with best NGO and reasoning
+ */
+export async function recommendBestNgo(context) {
+  const { ngos, canteenContext = {} } = context;
+
+  if (!ngos || ngos.length === 0) {
+    return {
+      recommendedNgo: null,
+      reasoning: 'No NGOs available to recommend.',
+      confidence: 'low',
+    };
+  }
+
+  if (ngos.length === 1) {
+    return {
+      recommendedNgo: ngos[0],
+      reasoning: 'Only one NGO available in this area.',
+      confidence: 'medium',
+    };
+  }
+
+  const prompt = `You are an AI assistant helping a canteen choose the best NGO for food surplus distribution.
+
+Available NGOs:
+${JSON.stringify(ngos, null, 2)}
+
+Canteen Context:
+${JSON.stringify(canteenContext, null, 2)}
+
+Analyze each NGO based on:
+1. Distance (closer is better for quick pickup)
+2. Capacity (should match or exceed surplus quantity)
+3. Specialties (relevance to food type)
+4. Contact availability (phone/email)
+5. Overall reliability factors
+
+IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after the JSON.
+
+Required JSON format:
+{
+  "recommendedNgoId": <number>,
+  "reasoning": "<string>",
+  "confidence": "low" or "medium" or "high",
+  "factors": {
+    "distance": "<string>",
+    "capacity": "<string>",
+    "specialties": "<string>",
+    "overall": "<string>"
+  },
+  "alternativeOptions": [
+    {
+      "ngoId": <number>,
+      "reason": "<string>"
+    }
+  ]
+}
+
+Example response:
+{
+  "recommendedNgoId": 1,
+  "reasoning": "HopeForAll Foundation is the best choice due to its close proximity (1.2 km), adequate capacity (50 kg/day), and proven track record in food distribution.",
+  "confidence": "high",
+  "factors": {
+    "distance": "Closest option at 1.2 km ensures quick pickup",
+    "capacity": "50 kg/day capacity is suitable for typical surplus quantities",
+    "specialties": "Specializes in Food Distribution and Community Meals, perfect match",
+    "overall": "Best balance of proximity, capacity, and specialization"
+  },
+  "alternativeOptions": [
+    {
+      "ngoId": 2,
+      "reason": "Good alternative with higher capacity (75 kg/day) but slightly farther (2.5 km)"
+    }
+  ]
+}`;
+
+  try {
+    const response = await generateAIResponse(prompt);
+    const parsed = parseJSONResponse(response);
+    if (parsed && parsed.recommendedNgoId) {
+      const recommendedNgo = ngos.find((ngo) => ngo.id === parsed.recommendedNgoId);
+      return {
+        recommendedNgo: recommendedNgo || ngos[0],
+        reasoning: parsed.reasoning || 'AI analysis completed.',
+        confidence: parsed.confidence || 'medium',
+        factors: parsed.factors || {},
+        alternativeOptions: parsed.alternativeOptions || [],
+      };
+    }
+    // Fallback: simple distance-based recommendation
+    return getFallbackRecommendation(ngos);
+  } catch (error) {
+    console.error('Error getting NGO recommendation:', error);
+    return getFallbackRecommendation(ngos);
+  }
+}
+
+/**
+ * Fallback recommendation based on simple heuristics
+ * @param {Array} ngos - Array of NGO objects
+ * @returns {Object} Recommendation object
+ */
+function getFallbackRecommendation(ngos) {
+  // Sort by distance (extract numeric value)
+  const sortedNgos = [...ngos].sort((a, b) => {
+    const distA = parseFloat(a.distance?.replace(/[^\d.]/g, '') || '999');
+    const distB = parseFloat(b.distance?.replace(/[^\d.]/g, '') || '999');
+    return distA - distB;
+  });
+
+  const recommended = sortedNgos[0];
+  return {
+    recommendedNgo: recommended,
+    reasoning: `Recommended based on proximity (${recommended.distance || 'N/A'}). Closest NGO for fastest pickup.`,
+    confidence: 'medium',
+    factors: {
+      distance: `Closest at ${recommended.distance || 'N/A'}`,
+      capacity: recommended.capacity || 'N/A',
+    },
+    alternativeOptions: sortedNgos.slice(1, 3).map((ngo) => ({
+      ngoId: ngo.id,
+      reason: `Alternative option at ${ngo.distance || 'N/A'}`,
+    })),
+  };
 }
 
 /**
