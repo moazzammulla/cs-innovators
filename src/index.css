@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-background text-gray-100 antialiased;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+}
+
+.card {
+  @apply bg-white/5 rounded-2xl border border-emerald-400/10 shadow-soft backdrop-blur-xl;
+}
+
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+}
+
+/* Futuristic gradient mesh background blobs */
+.bg-gradient-mesh {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.18), transparent 55%),
+    radial-gradient(circle at 80% 0%, rgba(56, 189, 248, 0.22), transparent 55%),
+    radial-gradient(circle at 10% 80%, rgba(132, 204, 22, 0.25), transparent 55%),
+    radial-gradient(circle at 90% 80%, rgba(34, 197, 94, 0.18), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1), rgba(15, 23, 42, 1));
+  z-index: -30;
+}
+
+.bg-gradient-mesh::before,
+.bg-gradient-mesh::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  border-radius: 999px;
+  background: conic-gradient(from 180deg, rgba(16, 185, 129, 0.45), transparent 40%, rgba(56, 189, 248, 0.35), transparent 70%, rgba(132, 204, 22, 0.5));
+  opacity: 0.3;
+  filter: blur(80px);
+  animation: mesh-glow 40s linear infinite alternate;
+}
+
+.bg-gradient-mesh::after {
+  animation-direction: alternate-reverse;
+}
+
+@keyframes mesh-glow {
+  0% {
+    transform: translate3d(-4%, -2%, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(2%, 4%, 0) rotate(20deg);
+  }
+  100% {
+    transform: translate3d(4%, -3%, 0) rotate(35deg);
+  }
+}
+
+/* Hero marquee background */
+.marquee {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee__inner {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 26s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Glassmorphism helper */
+.glass-card {
+  @apply bg-slate-900/40 border border-emerald-400/20 shadow-soft backdrop-blur-2xl;
+}
+
+/* Subtle moving grid/pattern for contact section */
+.contact-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+      rgba(148, 163, 184, 0.08) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.08) 1px,
+      transparent 1px
+    );
+  background-size: 32px 32px;
+  opacity: 0.5;
+  animation: contact-grid 20s linear infinite;
+}
+
+@keyframes contact-grid {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-32px, -32px, 0);
+  }
+}
