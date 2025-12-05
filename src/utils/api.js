@@ -35,3 +35,4 @@ export async function createSurplusPost(payload) {
   // Normally you would POST to backend; we just echo the payload.
   return { id: Date.now(), ...payload };
 }
+

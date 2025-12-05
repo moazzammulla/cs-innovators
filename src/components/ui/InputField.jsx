@@ -12,7 +12,7 @@ const InputField = ({ label, name, type = 'text', error, ...props }) => {
         id={name}
         name={name}
         type={type}
-        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-black shadow-sm transition focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         {...props}
       />
       {error && <p className="text-xs text-red-500">{error}</p>}
