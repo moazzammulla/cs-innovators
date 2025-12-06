@@ -48,18 +48,60 @@ const PickupTrackingPage = () => {
   const userRole = location.pathname.includes('/ngo/') ? 'ngo' : 'canteen';
 
   useEffect(() => {
-    loadPickups();
+    // Check if we have a new pickup from navigation state
+    if (location.state?.newPickup) {
+      const newPickup = location.state.newPickup;
+      setPickups([newPickup]);
+      setSelectedPickup(newPickup);
+      // Clear the state to avoid re-using it
+      window.history.replaceState({}, document.title);
+    } else {
+      // Load from localStorage
+      loadPickups();
+    }
+    
+    // Also refresh when component becomes visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadPickups();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
     // Refresh every 3 seconds
     const interval = setInterval(loadPickups, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [location.pathname, location.state]);
 
   const loadPickups = () => {
-    const activePickups = getActivePickups();
-    setPickups(activePickups);
-    // Auto-select first pickup if none selected
-    if (!selectedPickup && activePickups.length > 0) {
-      setSelectedPickup(activePickups[0]);
+    try {
+      const activePickups = getActivePickups();
+      setPickups(activePickups);
+      
+      // Auto-select first pickup if none selected, or if current selection is no longer in list
+      setSelectedPickup((currentSelected) => {
+        if (activePickups.length > 0) {
+          if (!currentSelected || !activePickups.find(p => p.id === currentSelected.id)) {
+            return activePickups[0];
+          } else {
+            // Update selected pickup with latest data
+            const updated = activePickups.find(p => p.id === currentSelected.id);
+            return updated || currentSelected;
+          }
+        } else {
+          return null;
+        }
+      });
+    } catch (error) {
+      console.warn('Error loading pickups:', error);
+      // Continue with empty list if there's an error
+      setPickups([]);
+      setSelectedPickup(null);
     }
   };
 
@@ -181,7 +223,7 @@ const PickupTrackingPage = () => {
                 <Button
                   size="sm"
                   onClick={() => handleStatusUpdate(currentPickup.id, 'Picked Up')}
-                  className="flex-1"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg shadow-green-200/50 hover:from-green-600 hover:to-teal-600"
                 >
                   Mark as Picked Up
                 </Button>
@@ -192,7 +234,7 @@ const PickupTrackingPage = () => {
                 <Button
                   size="sm"
                   onClick={() => handleStatusUpdate(currentPickup.id, 'Delivered')}
-                  className="flex-1"
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-200/50 hover:from-blue-600 hover:to-purple-600"
                 >
                   Mark as Delivered
                 </Button>

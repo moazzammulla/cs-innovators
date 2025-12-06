@@ -33,11 +33,11 @@ export function getAvailableSurplusPosts() {
 }
 
 /**
- * Create a new surplus post
+ * Create a new surplus post (localStorage only - no API call)
  * @param {Object} postData - Surplus post data
  * @returns {Object} Created post with ID and timestamps
  */
-export function createSurplusPost(postData) {
+export function createSurplusPostLocal(postData) {
   const posts = getAllSurplusPosts();
   const newPost = {
     id: Date.now(),
@@ -60,12 +60,12 @@ export function createSurplusPost(postData) {
 }
 
 /**
- * Update surplus post status
+ * Update surplus post status (localStorage only - no API call)
  * @param {number} postId - Post ID
  * @param {string} status - New status
  * @returns {Object|null} Updated post or null
  */
-export function updateSurplusPostStatus(postId, status) {
+export function updateSurplusPostStatusLocal(postId, status) {
   const posts = getAllSurplusPosts();
   const postIndex = posts.findIndex((p) => p.id === postId);
   if (postIndex === -1) return null;
@@ -102,30 +102,33 @@ export function getActivePickups() {
 /**
  * Create a new pickup record
  * @param {Object} pickupData - Pickup data
- * @returns {Object} Created pickup with ID and timeline
+ * @returns {Promise<Object>} Created pickup with ID and timeline
  */
-export function createPickup(pickupData) {
+export async function createPickup(pickupData) {
+  // Get current data
   const pickups = getAllPickups();
   const surplusPost = getAllSurplusPosts().find((p) => p.id === pickupData.surplusId);
   
-  if (!surplusPost) {
-    throw new Error('Surplus post not found');
-  }
+  // If surplus post not found, create a minimal one from the pickup data
+  const foodName = surplusPost?.foodName || pickupData.foodName || 'Surplus Food';
+  const quantity = surplusPost?.quantity || pickupData.quantity || 'Unknown';
+  const canteen = surplusPost?.canteen || pickupData.canteen || 'Green Leaf Canteen';
+  const createdAt = surplusPost?.createdAt || new Date().toISOString();
 
   const newPickup = {
     id: Date.now(),
     surplusId: pickupData.surplusId,
-    ngoId: pickupData.ngoId || 1, // Default NGO ID
+    ngoId: pickupData.ngoId || 1,
     ngoName: pickupData.ngoName || 'HopeForAll',
-    foodName: surplusPost.foodName,
-    quantity: surplusPost.quantity,
-    canteen: surplusPost.canteen,
+    foodName: foodName,
+    quantity: quantity,
+    canteen: canteen,
     status: 'NGO Assigned',
     statusTimeline: [
       {
         status: 'Posted',
-        at: surplusPost.createdAt,
-        description: `Posted by ${surplusPost.canteen}`,
+        at: createdAt,
+        description: `Posted by ${canteen}`,
       },
       {
         status: 'NGO Assigned',
@@ -137,11 +140,18 @@ export function createPickup(pickupData) {
     updatedAt: new Date().toISOString(),
   };
 
+  // Save to localStorage
   pickups.push(newPickup);
-  localStorage.setItem(STORAGE_KEYS.PICKUPS, JSON.stringify(pickups));
+  try {
+    localStorage.setItem(STORAGE_KEYS.PICKUPS, JSON.stringify(pickups));
+  } catch (error) {
+    console.warn('localStorage save failed, continuing anyway:', error);
+  }
 
-  // Update surplus post status
-  updateSurplusPostStatus(pickupData.surplusId, 'NGO Assigned');
+  // Update surplus post status if it exists
+  if (surplusPost) {
+    updateSurplusPostStatusLocal(pickupData.surplusId, 'NGO Assigned');
+  }
 
   return newPickup;
 }
@@ -150,9 +160,9 @@ export function createPickup(pickupData) {
  * Update pickup status
  * @param {number} pickupId - Pickup ID
  * @param {string} status - New status
- * @returns {Object|null} Updated pickup or null
+ * @returns {Promise<Object|null>} Updated pickup or null
  */
-export function updatePickupStatus(pickupId, status) {
+export async function updatePickupStatus(pickupId, status) {
   const pickups = getAllPickups();
   const pickupIndex = pickups.findIndex((p) => p.id === pickupId);
   if (pickupIndex === -1) return null;
@@ -171,11 +181,11 @@ export function updatePickupStatus(pickupId, status) {
 
   localStorage.setItem(STORAGE_KEYS.PICKUPS, JSON.stringify(pickups));
 
-  // Update surplus post status if needed
+  // Update surplus post status if needed (use local function to avoid API recursion)
   if (status === 'Picked Up') {
-    updateSurplusPostStatus(pickup.surplusId, 'Picked Up');
+    updateSurplusPostStatusLocal(pickup.surplusId, 'Picked Up');
   } else if (status === 'Delivered') {
-    updateSurplusPostStatus(pickup.surplusId, 'Delivered');
+    updateSurplusPostStatusLocal(pickup.surplusId, 'Delivered');
   }
 
   return pickup;

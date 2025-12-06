@@ -16,54 +16,101 @@ export async function fetchTodaysSurplus() {
 }
 
 export async function fetchCanteenSurplusPosts() {
-  await delay(300);
-  // Use data manager to get all posts for canteen
-  const { getAllSurplusPosts } = await import('./surplusDataManager');
-  const allPosts = getAllSurplusPosts();
-  
-  // If no posts, fallback to mock data
-  if (allPosts.length === 0) {
-    return canteenSurplusPosts;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/surplus-posts?canteenId=1`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch surplus posts');
+    }
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      // Transform to match expected format
+      return result.data
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .map((post) => ({
+          id: post.id,
+          foodName: post.foodName,
+          quantity: post.quantity,
+          status: post.status === 'Available' ? 'Posted' : post.status,
+          createdAt: new Date(post.createdAt).toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+          }),
+        }));
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching surplus posts from API:', error);
+    // Fallback to localStorage
+    await delay(300);
+    const { getAllSurplusPosts } = await import('./surplusDataManager');
+    const allPosts = getAllSurplusPosts();
+    
+    if (allPosts.length === 0) {
+      return canteenSurplusPosts;
+    }
+    
+    return allPosts
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .map((post) => ({
+        id: post.id,
+        foodName: post.foodName,
+        quantity: post.quantity,
+        status: post.status === 'Available' ? 'Posted' : post.status,
+        createdAt: new Date(post.createdAt).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        }),
+      }));
   }
-  
-  // Transform to match expected format
-  return allPosts
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .map((post) => ({
-      id: post.id,
-      foodName: post.foodName,
-      quantity: post.quantity,
-      status: post.status === 'Available' ? 'Posted' : post.status,
-      createdAt: new Date(post.createdAt).toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-      }),
-    }));
 }
 
 export async function fetchNgoNearbySurplus() {
-  await delay(300);
-  // Use data manager to get available surplus posts
-  const { getAvailableSurplusPosts } = await import('./surplusDataManager');
-  const availablePosts = getAvailableSurplusPosts();
-  
-  // If no posts from data manager, fallback to mock data
-  if (availablePosts.length === 0) {
-    return ngoNearbySurplus;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/surplus-posts/available`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch available surplus posts');
+    }
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      // Transform to match expected format
+      return result.data.map((post) => ({
+        id: post.id,
+        foodName: post.foodName,
+        quantity: post.quantity,
+        canteen: post.canteen || 'Green Leaf Canteen',
+        distance: post.distance || '1.2 km',
+        deadline: post.deadline || 'Today, 8:30 PM',
+        status: post.status,
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching available surplus posts from API:', error);
+    // Fallback to localStorage
+    await delay(300);
+    const { getAvailableSurplusPosts } = await import('./surplusDataManager');
+    const availablePosts = getAvailableSurplusPosts();
+    
+    if (availablePosts.length === 0) {
+      return ngoNearbySurplus;
+    }
+    
+    return availablePosts.map((post) => ({
+      id: post.id,
+      foodName: post.foodName,
+      quantity: post.quantity,
+      canteen: post.canteen || 'Green Leaf Canteen',
+      distance: post.distance || '1.2 km',
+      deadline: post.deadline || 'Today, 8:30 PM',
+      status: post.status,
+    }));
   }
-  
-  // Transform to match expected format
-  return availablePosts.map((post) => ({
-    id: post.id,
-    foodName: post.foodName,
-    quantity: post.quantity,
-    canteen: post.canteen || 'Green Leaf Canteen',
-    distance: post.distance || '1.2 km',
-    deadline: post.deadline || 'Today, 8:30 PM',
-    status: post.status,
-  }));
 }
 
 export async function fetchAnalytics() {
@@ -81,22 +128,102 @@ export async function fetchAnalytics() {
 }
 
 export async function createSurplusPost(payload) {
-  await delay(400);
-  // Use data manager to create and save the post
-  const { createSurplusPost: createPost } = await import('./surplusDataManager');
-  const newPost = createPost({
-    foodName: payload.foodName,
-    quantity: payload.quantity,
-    preparedTime: payload.preparedTime,
-    vegType: payload.vegType,
-    image: payload.image,
-    safetyChecklist: payload.safetyChecklist,
-  });
-  return newPost;
+  // Convert preparedTime to ISO format if it's a simple string
+  let preparedTimeISO = payload.preparedTime;
+  if (payload.preparedTime && !payload.preparedTime.includes('T') && !payload.preparedTime.includes('Z')) {
+    // If it's not already in ISO format, use current time as fallback
+    // In a real app, you'd parse the user input, but for now we'll use current time
+    preparedTimeISO = new Date().toISOString();
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/surplus-posts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        foodName: payload.foodName,
+        quantity: payload.quantity,
+        preparedTime: preparedTimeISO,
+        vegType: payload.vegType,
+        image: payload.image || '',
+        safetyChecklist: payload.safetyChecklist,
+        canteenId: 1, // Default canteen ID
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Failed to create surplus post: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      return result.data;
+    }
+    
+    throw new Error('Invalid response from API');
+  } catch (error) {
+    console.error('Error creating surplus post via API:', error);
+    console.log('Falling back to localStorage...');
+    // Fallback to localStorage (use local function to avoid recursion)
+    await delay(400);
+    const { createSurplusPostLocal } = await import('./surplusDataManager');
+    const newPost = createSurplusPostLocal({
+      foodName: payload.foodName,
+      quantity: payload.quantity,
+      preparedTime: payload.preparedTime,
+      vegType: payload.vegType,
+      image: payload.image,
+      safetyChecklist: payload.safetyChecklist,
+    });
+    return newPost;
+  }
 }
 
 // Base URL for Mockoon API (update this to your Mockoon server URL)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+/**
+ * Update surplus post status via API
+ * @param {number} postId - Post ID
+ * @param {string} status - New status
+ * @returns {Promise<Object|null>} Updated post or null
+ */
+export async function updateSurplusPostStatus(postId, status) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/surplus-posts/${postId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null; // Post not found
+      }
+      throw new Error('Failed to update surplus post status');
+    }
+    
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      return result.data;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error updating surplus post status via API:', error);
+    console.log('Falling back to localStorage...');
+    // Fallback to localStorage (use local function to avoid recursion)
+    const { updateSurplusPostStatusLocal } = await import('./surplusDataManager');
+    return updateSurplusPostStatusLocal(postId, status);
+  }
+}
 
 /**
  * Fetch NGOs by pincode

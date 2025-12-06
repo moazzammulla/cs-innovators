@@ -1,0 +1,278 @@
+{
+  "name": "Surplus Posts API",
+  "version": "1.0.0",
+  "description": "API endpoints for managing surplus food posts",
+  "endpoints": [
+    {
+      "name": "Get All Surplus Posts",
+      "method": "GET",
+      "path": "/api/surplus-posts",
+      "description": "Get all surplus posts, optionally filtered by canteenId or status",
+      "queryParameters": [
+        {
+          "name": "canteenId",
+          "type": "number",
+          "required": false,
+          "description": "Filter by canteen ID"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": false,
+          "description": "Filter by status: Available, NGO Assigned, Picked Up, Delivered"
+        }
+      ],
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "success": true,
+          "data": [
+            {
+              "id": 1,
+              "foodName": "Veg Pulao",
+              "quantity": "25 portions",
+              "status": "Available",
+              "preparedTime": "2024-12-06T10:00:00Z",
+              "vegType": "veg",
+              "image": "",
+              "safetyChecklist": {
+                "storedProperly": true,
+                "withinSafeTime": true,
+                "labelled": true
+              },
+              "canteen": "Green Leaf Canteen",
+              "canteenId": 1,
+              "distance": "1.2 km",
+              "deadline": "Today, 8:30 PM",
+              "createdAt": "2024-12-06T10:30:00Z",
+              "updatedAt": "2024-12-06T10:30:00Z"
+            },
+            {
+              "id": 2,
+              "foodName": "TAZA Rice",
+              "quantity": "22 kg",
+              "status": "Delivered",
+              "preparedTime": "2024-12-06T09:00:00Z",
+              "vegType": "veg",
+              "image": "",
+              "safetyChecklist": {
+                "storedProperly": true,
+                "withinSafeTime": true,
+                "labelled": true
+              },
+              "canteen": "Green Leaf Canteen",
+              "canteenId": 1,
+              "distance": "1.2 km",
+              "deadline": "Today, 8:30 PM",
+              "createdAt": "2024-12-06T09:24:00Z",
+              "updatedAt": "2024-12-06T10:55:00Z"
+            },
+            {
+              "id": 3,
+              "foodName": "wd",
+              "quantity": "22",
+              "status": "Available",
+              "preparedTime": "2024-12-06T08:00:00Z",
+              "vegType": "veg",
+              "image": "",
+              "safetyChecklist": {
+                "storedProperly": true,
+                "withinSafeTime": true,
+                "labelled": true
+              },
+              "canteen": "Green Leaf Canteen",
+              "canteenId": 1,
+              "distance": "1.2 km",
+              "deadline": "Today, 8:30 PM",
+              "createdAt": "2024-12-06T09:18:00Z",
+              "updatedAt": "2024-12-06T09:18:00Z"
+            }
+          ],
+          "count": 3
+        }
+      }
+    },
+    {
+      "name": "Get Available Surplus Posts",
+      "method": "GET",
+      "path": "/api/surplus-posts/available",
+      "description": "Get all available surplus posts (status: Available)",
+      "queryParameters": [
+        {
+          "name": "pincode",
+          "type": "string",
+          "required": false,
+          "description": "Filter by pincode area"
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "required": false,
+          "description": "Limit results (default: 50)"
+        }
+      ],
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "success": true,
+          "data": [
+            {
+              "id": 1,
+              "foodName": "Veg Pulao",
+              "quantity": "25 portions",
+              "status": "Available",
+              "canteen": "Green Leaf Canteen",
+              "distance": "1.2 km",
+              "deadline": "Today, 8:30 PM",
+              "createdAt": "2024-12-06T10:30:00Z"
+            },
+            {
+              "id": 3,
+              "foodName": "wd",
+              "quantity": "22",
+              "status": "Available",
+              "canteen": "Green Leaf Canteen",
+              "distance": "1.2 km",
+              "deadline": "Today, 8:30 PM",
+              "createdAt": "2024-12-06T09:18:00Z"
+            }
+          ],
+          "count": 2
+        }
+      }
+    },
+    {
+      "name": "Create Surplus Post",
+      "method": "POST",
+      "path": "/api/surplus-posts",
+      "description": "Create a new surplus food post",
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["foodName", "quantity", "preparedTime", "vegType"],
+          "properties": {
+            "foodName": {
+              "type": "string",
+              "description": "Name of the food item"
+            },
+            "quantity": {
+              "type": "string",
+              "description": "Quantity (e.g., '25 portions' or '22 kg')"
+            },
+            "preparedTime": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the food was prepared (ISO 8601)"
+            },
+            "vegType": {
+              "type": "string",
+              "enum": ["veg", "non-veg"],
+              "description": "Vegetarian or non-vegetarian"
+            },
+            "image": {
+              "type": "string",
+              "description": "Image URL (optional)"
+            },
+            "safetyChecklist": {
+              "type": "object",
+              "properties": {
+                "storedProperly": {
+                  "type": "boolean"
+                },
+                "withinSafeTime": {
+                  "type": "boolean"
+                },
+                "labelled": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "canteenId": {
+              "type": "number",
+              "description": "Canteen ID (optional, defaults to 1)"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "success": true,
+          "data": {
+            "id": 4,
+            "foodName": "Dal & Rice",
+            "quantity": "30 portions",
+            "status": "Available",
+            "preparedTime": "2024-12-06T12:00:00Z",
+            "vegType": "veg",
+            "image": "",
+            "safetyChecklist": {
+              "storedProperly": true,
+              "withinSafeTime": true,
+              "labelled": true
+            },
+            "canteen": "Green Leaf Canteen",
+            "canteenId": 1,
+            "distance": "1.2 km",
+            "deadline": "Today, 8:30 PM",
+            "createdAt": "2024-12-06T12:30:00Z",
+            "updatedAt": "2024-12-06T12:30:00Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "Update Surplus Post Status",
+      "method": "PATCH",
+      "path": "/api/surplus-posts/:id/status",
+      "description": "Update the status of a surplus post",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "number",
+          "required": true,
+          "description": "Surplus post ID"
+        }
+      ],
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["Available", "NGO Assigned", "Picked Up", "Delivered"],
+              "description": "New status"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "success": true,
+          "data": {
+            "id": 1,
+            "status": "NGO Assigned",
+            "updatedAt": "2024-12-06T13:00:00Z"
+          }
+        }
+      }
+    }
+  ]
+}
+

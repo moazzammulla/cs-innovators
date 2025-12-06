@@ -141,29 +141,29 @@ const AISuggestionsPanel = ({ availableSurplus = [] }) => {
   ];
 
   return (
-    <div className="glass-card rounded-2xl border border-emerald-400/20 p-5 shadow-[0_0_20px_rgba(16,185,129,0.15)] space-y-4">
+    <div className="bg-white rounded-2xl border border-green-200 p-5 shadow-md shadow-green-100/50 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-emerald-200">🤖 AI Suggestions</h3>
-          <p className="text-[10px] text-gray-400">Get AI-powered recommendations</p>
+          <h3 className="text-sm font-semibold text-slate-700">🤖 AI Suggestions</h3>
+          <p className="text-[10px] text-slate-500">Get AI-powered recommendations</p>
         </div>
         {!isAIServiceAvailable() && (
-          <span className="rounded-full bg-yellow-500/10 px-2 py-0.5 text-[10px] text-yellow-300 ring-1 ring-yellow-400/30">
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] text-amber-700 ring-1 ring-amber-200">
             API Key Required
           </span>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 overflow-x-auto border-b border-emerald-400/20">
+      <div className="flex gap-1 overflow-x-auto border-b border-green-200">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-1 whitespace-nowrap border-b-2 px-2 py-1.5 text-[11px] font-medium transition-colors ${
               activeTab === tab.id
-                ? 'border-emerald-400 text-emerald-300'
-                : 'border-transparent text-gray-400 hover:text-gray-300'
+                ? 'border-green-500 text-green-600'
+                : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
             <span>{tab.icon}</span>
@@ -250,28 +250,32 @@ const AISuggestionsPanel = ({ availableSurplus = [] }) => {
                   </select>
                 </div>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg shadow-green-200/50 hover:from-green-600 hover:to-teal-600" 
+                disabled={isLoading}
+              >
                 {isLoading ? 'Calculating...' : 'Calculate Requirements'}
               </Button>
             </form>
 
             {results.requirements && (
-              <div className="rounded-lg bg-emerald-500/10 border border-emerald-400/20 p-3 space-y-2 text-xs">
-                <p className="font-semibold text-emerald-200">AI Calculation Results:</p>
+              <div className="rounded-lg bg-green-50 border border-green-200 p-3 space-y-2 text-xs">
+                <p className="font-semibold text-green-700">AI Calculation Results:</p>
                 <div className="grid gap-2 md:grid-cols-2">
                   <div>
-                    <span className="text-gray-300">Total Portions:</span>
-                    <span className="ml-2 font-semibold text-emerald-300">{results.requirements.totalPortions}</span>
+                    <span className="text-slate-600">Total Portions:</span>
+                    <span className="ml-2 font-semibold text-green-600">{results.requirements.totalPortions}</span>
                   </div>
                   <div>
-                    <span className="text-gray-300">Total Weight:</span>
-                    <span className="ml-2 font-semibold text-emerald-300">{results.requirements.totalKg} kg</span>
+                    <span className="text-slate-600">Total Weight:</span>
+                    <span className="ml-2 font-semibold text-green-600">{results.requirements.totalKg} kg</span>
                   </div>
                 </div>
                 {results.requirements.recommendations && (
                   <div className="mt-2 space-y-1">
-                    <p className="font-medium text-emerald-200">Recommendations:</p>
-                    <ul className="list-disc list-inside space-y-1 text-[11px] text-gray-300">
+                    <p className="font-medium text-green-700">Recommendations:</p>
+                    <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-600">
                       {results.requirements.recommendations.map((rec, idx) => (
                         <li key={idx}>{rec}</li>
                       ))}
@@ -285,32 +289,32 @@ const AISuggestionsPanel = ({ availableSurplus = [] }) => {
 
         {activeTab === 'nutrition' && (
           <div className="space-y-3">
-            <p className="text-[11px] text-gray-300">
+            <p className="text-[11px] text-slate-600">
               Analyze nutritional value of available surplus items.
             </p>
             <Button 
               onClick={handleNutritionalAnalysis} 
-              className="w-full bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]" 
+              className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg shadow-green-200/50 hover:from-green-600 hover:to-teal-600" 
               disabled={isLoading}
             >
               {isLoading ? 'Analyzing...' : 'Analyze Nutrition'}
             </Button>
 
             {results.nutrition && (
-              <div className="rounded-lg bg-emerald-500/10 border border-emerald-400/20 p-3 space-y-2 text-xs">
-                <p className="font-semibold text-emerald-200">Nutritional Analysis:</p>
+              <div className="rounded-lg bg-green-50 border border-green-200 p-3 space-y-2 text-xs">
+                <p className="font-semibold text-green-700">Nutritional Analysis:</p>
                 {results.nutrition.balancedMealScore && (
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-300">Balanced Meal Score:</span>
-                    <span className="font-semibold text-emerald-300">
+                    <span className="text-slate-600">Balanced Meal Score:</span>
+                    <span className="font-semibold text-green-600">
                       {results.nutrition.balancedMealScore}/100
                     </span>
                   </div>
                 )}
                 {results.nutrition.recommendations && (
                   <div className="mt-2 space-y-1">
-                    <p className="font-medium text-emerald-200">Recommendations:</p>
-                    <ul className="list-disc list-inside space-y-1 text-[11px] text-gray-300">
+                    <p className="font-medium text-green-700">Recommendations:</p>
+                    <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-600">
                       {results.nutrition.recommendations.map((rec, idx) => (
                         <li key={idx}>{rec}</li>
                       ))}
@@ -324,22 +328,22 @@ const AISuggestionsPanel = ({ availableSurplus = [] }) => {
 
         {activeTab === 'meal-planning' && (
           <div className="space-y-3">
-            <p className="text-[11px] text-gray-300">
+            <p className="text-[11px] text-slate-600">
               Get AI suggestions for meal planning and distribution.
             </p>
             <Button 
               onClick={handleMealPlanning} 
-              className="w-full bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]" 
+              className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg shadow-green-200/50 hover:from-green-600 hover:to-teal-600" 
               disabled={isLoading}
             >
               {isLoading ? 'Generating Plan...' : 'Generate Meal Plan'}
             </Button>
 
             {results.mealPlanning && (
-              <div className="rounded-lg bg-cyan-500/10 border border-cyan-400/20 p-3 space-y-2 text-xs">
-                <p className="font-semibold text-cyan-200">Meal Planning Suggestions:</p>
+              <div className="rounded-lg bg-teal-50 border border-teal-200 p-3 space-y-2 text-xs">
+                <p className="font-semibold text-teal-700">Meal Planning Suggestions:</p>
                 {results.mealPlanning.distributionPlan && (
-                  <p className="text-[11px] text-gray-300">{results.mealPlanning.distributionPlan}</p>
+                  <p className="text-[11px] text-slate-600">{results.mealPlanning.distributionPlan}</p>
                 )}
               </div>
             )}
@@ -348,31 +352,31 @@ const AISuggestionsPanel = ({ availableSurplus = [] }) => {
 
         {activeTab === 'impact' && (
           <div className="space-y-3">
-            <p className="text-[11px] text-gray-300">
+            <p className="text-[11px] text-slate-600">
               Predict the impact of your food distribution.
             </p>
             <Button 
               onClick={handleImpactPrediction} 
-              className="w-full bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]" 
+              className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg shadow-green-200/50 hover:from-green-600 hover:to-teal-600" 
               disabled={isLoading}
             >
               {isLoading ? 'Predicting...' : 'Predict Impact'}
             </Button>
 
             {results.impact && (
-              <div className="rounded-lg bg-lime-500/10 border border-lime-400/20 p-3 space-y-2 text-xs">
-                <p className="font-semibold text-lime-200">Impact Prediction:</p>
+              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 space-y-2 text-xs">
+                <p className="font-semibold text-emerald-700">Impact Prediction:</p>
                 <div className="grid gap-2">
                   {results.impact.peopleFed && (
                     <div>
-                      <span className="text-gray-300">People Fed:</span>
-                      <span className="ml-2 font-semibold text-lime-300">{results.impact.peopleFed}</span>
+                      <span className="text-slate-600">People Fed:</span>
+                      <span className="ml-2 font-semibold text-emerald-600">{results.impact.peopleFed}</span>
                     </div>
                   )}
                   {results.impact.socialImpact && (
                     <div>
-                      <span className="text-gray-300">Meals Provided:</span>
-                      <span className="ml-2 font-semibold text-lime-300">
+                      <span className="text-slate-600">Meals Provided:</span>
+                      <span className="ml-2 font-semibold text-emerald-600">
                         {results.impact.socialImpact.mealsProvided}
                       </span>
                     </div>

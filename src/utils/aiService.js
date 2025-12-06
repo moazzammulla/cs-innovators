@@ -4,13 +4,13 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-// Use gemini-1.5-pro (high performance model)
-const DEFAULT_MODEL = 'gemini-1.5-pro';
+// Use gemini-1.5-flash as it's the only model supported in free tier API keys
+const DEFAULT_MODEL = 'gemini-2.0-flash';
 
 /**
  * Get the Gemini model instance
- * Uses gemini-1.5-pro (high performance model)
- * @param {string} modelName - Model name (defaults to gemini-1.5-pro)
+ * Uses gemini-1.5-flash (free tier compatible)
+ * @param {string} modelName - Model name (defaults to gemini-1.5-flash)
  * @returns {GenerativeModel} Model instance
  */
 function getModel(modelName = DEFAULT_MODEL) {
@@ -19,8 +19,8 @@ function getModel(modelName = DEFAULT_MODEL) {
     return null;
   }
 
-  // Use gemini-1.5-pro
-  return genAI.getGenerativeModel({ model: modelName });
+  // Always use gemini-1.5-flash for free tier
+  return genAI.getGenerativeModel({ model: DEFAULT_MODEL });
 }
 
 /**
@@ -30,7 +30,7 @@ function getModel(modelName = DEFAULT_MODEL) {
  */
 function extractJSON(text) {
   if (!text) return null;
-  
+
   // First, try to extract JSON from markdown code blocks
   // Match ```json ... ``` or ``` ... ```
   const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
@@ -41,13 +41,13 @@ function extractJSON(text) {
       return jsonString;
     }
   }
-  
+
   // If no code block found, try to find JSON object directly
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (jsonMatch) {
     return jsonMatch[0];
   }
-  
+
   return null;
 }
 
@@ -99,12 +99,12 @@ export async function generateAIResponse(prompt, options = {}) {
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       generationConfig,
     });
-    
+
     const response = await result.response;
     return response.text();
   } catch (error) {
     console.error('Error generating AI response:', error);
-    
+
     // Provide helpful error messages
     if (error.message?.includes('404') || error.message?.includes('not found')) {
       throw new Error(
@@ -113,7 +113,7 @@ export async function generateAIResponse(prompt, options = {}) {
         `Error: ${error.message}`
       );
     }
-    
+
     throw new Error(`AI service error: ${error.message}`);
   }
 }

@@ -55,11 +55,16 @@ const AddSurplusPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      toast.error('Please fill in all required fields and confirm safety checks');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
+      console.log('Submitting surplus post with data:', form);
       const newPost = await createSurplusPost(form);
+      console.log('Surplus post created successfully:', newPost);
       toast.success(`Surplus food post created! ${newPost.foodName} is now available for NGOs.`);
       setForm(initialForm);
       // Redirect to canteen dashboard after a short delay
@@ -68,7 +73,7 @@ const AddSurplusPage = () => {
       }, 1500);
     } catch (error) {
       console.error('Error creating surplus post:', error);
-      toast.error('Failed to create surplus post. Please try again.');
+      toast.error(error.message || 'Failed to create surplus post. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -198,7 +203,11 @@ const AddSurplusPage = () => {
         </div>
 
         <div className="pt-2">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button 
+            type="submit" 
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-200/50 hover:from-blue-600 hover:to-purple-600" 
+            disabled={isSubmitting}
+          >
             {isSubmitting ? 'Submitting...' : 'Submit Surplus'}
           </Button>
         </div>

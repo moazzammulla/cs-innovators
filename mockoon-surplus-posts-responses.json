@@ -1,0 +1,75 @@
+{
+  "endpoints": [
+    {
+      "name": "Get All Surplus Posts",
+      "method": "GET",
+      "path": "/api/surplus-posts",
+      "responses": [
+        {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"foodName\": \"Veg Pulao\",\n      \"quantity\": \"25 portions\",\n      \"status\": \"Available\",\n      \"preparedTime\": \"2024-12-06T10:00:00Z\",\n      \"vegType\": \"veg\",\n      \"image\": \"\",\n      \"safetyChecklist\": {\n        \"storedProperly\": true,\n        \"withinSafeTime\": true,\n        \"labelled\": true\n      },\n      \"canteen\": \"Green Leaf Canteen\",\n      \"canteenId\": 1,\n      \"distance\": \"1.2 km\",\n      \"deadline\": \"Today, 8:30 PM\",\n      \"createdAt\": \"2024-12-06T10:30:00Z\",\n      \"updatedAt\": \"2024-12-06T10:30:00Z\"\n    },\n    {\n      \"id\": 2,\n      \"foodName\": \"TAZA Rice\",\n      \"quantity\": \"22 kg\",\n      \"status\": \"Delivered\",\n      \"preparedTime\": \"2024-12-06T09:00:00Z\",\n      \"vegType\": \"veg\",\n      \"image\": \"\",\n      \"safetyChecklist\": {\n        \"storedProperly\": true,\n        \"withinSafeTime\": true,\n        \"labelled\": true\n      },\n      \"canteen\": \"Green Leaf Canteen\",\n      \"canteenId\": 1,\n      \"distance\": \"1.2 km\",\n      \"deadline\": \"Today, 8:30 PM\",\n      \"createdAt\": \"2024-12-06T09:24:00Z\",\n      \"updatedAt\": \"2024-12-06T10:55:00Z\"\n    },\n    {\n      \"id\": 3,\n      \"foodName\": \"wd\",\n      \"quantity\": \"22\",\n      \"status\": \"Available\",\n      \"preparedTime\": \"2024-12-06T08:00:00Z\",\n      \"vegType\": \"veg\",\n      \"image\": \"\",\n      \"safetyChecklist\": {\n        \"storedProperly\": true,\n        \"withinSafeTime\": true,\n        \"labelled\": true\n      },\n      \"canteen\": \"Green Leaf Canteen\",\n      \"canteenId\": 1,\n      \"distance\": \"1.2 km\",\n      \"deadline\": \"Today, 8:30 PM\",\n      \"createdAt\": \"2024-12-06T09:18:00Z\",\n      \"updatedAt\": \"2024-12-06T09:18:00Z\"\n    }\n  ],\n  \"count\": 3\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Available Surplus Posts",
+      "method": "GET",
+      "path": "/api/surplus-posts/available",
+      "responses": [
+        {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"foodName\": \"Veg Pulao\",\n      \"quantity\": \"25 portions\",\n      \"status\": \"Available\",\n      \"canteen\": \"Green Leaf Canteen\",\n      \"distance\": \"1.2 km\",\n      \"deadline\": \"Today, 8:30 PM\",\n      \"createdAt\": \"2024-12-06T10:30:00Z\"\n    },\n    {\n      \"id\": 3,\n      \"foodName\": \"wd\",\n      \"quantity\": \"22\",\n      \"status\": \"Available\",\n      \"canteen\": \"Green Leaf Canteen\",\n      \"distance\": \"1.2 km\",\n      \"deadline\": \"Today, 8:30 PM\",\n      \"createdAt\": \"2024-12-06T09:18:00Z\"\n    }\n  ],\n  \"count\": 2\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Surplus Post",
+      "method": "POST",
+      "path": "/api/surplus-posts",
+      "responses": [
+        {
+          "status": 201,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 4,\n    \"foodName\": \"Dal & Rice\",\n    \"quantity\": \"30 portions\",\n    \"status\": \"Available\",\n    \"preparedTime\": \"2024-12-06T12:00:00Z\",\n    \"vegType\": \"veg\",\n    \"image\": \"\",\n    \"safetyChecklist\": {\n      \"storedProperly\": true,\n      \"withinSafeTime\": true,\n      \"labelled\": true\n    },\n    \"canteen\": \"Green Leaf Canteen\",\n    \"canteenId\": 1,\n    \"distance\": \"1.2 km\",\n    \"deadline\": \"Today, 8:30 PM\",\n    \"createdAt\": \"2024-12-06T12:30:00Z\",\n    \"updatedAt\": \"2024-12-06T12:30:00Z\"\n  }\n}"
+        },
+        {
+          "status": 400,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\n  \"success\": false,\n  \"error\": \"Validation error\",\n  \"message\": \"foodName, quantity, preparedTime, and vegType are required\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Surplus Post Status",
+      "method": "PATCH",
+      "path": "/api/surplus-posts/:id/status",
+      "responses": [
+        {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"status\": \"NGO Assigned\",\n    \"updatedAt\": \"2024-12-06T13:00:00Z\"\n  }\n}"
+        },
+        {
+          "status": 404,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\n  \"success\": false,\n  \"error\": \"Not found\",\n  \"message\": \"Surplus post with id 999 not found\"\n}"
+        }
+      ]
+    }
+  ]
+}
+
