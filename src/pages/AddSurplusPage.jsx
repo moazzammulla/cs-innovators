@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Button from '../components/ui/Button';
 import InputField from '../components/ui/InputField';
@@ -18,8 +19,10 @@ const initialForm = {
 };
 
 const AddSurplusPage = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -54,9 +57,21 @@ const AddSurplusPage = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    await createSurplusPost(form);
-    toast.success('Surplus food post created (mock)');
-    setForm(initialForm);
+    setIsSubmitting(true);
+    try {
+      const newPost = await createSurplusPost(form);
+      toast.success(`Surplus food post created! ${newPost.foodName} is now available for NGOs.`);
+      setForm(initialForm);
+      // Redirect to canteen dashboard after a short delay
+      setTimeout(() => {
+        navigate('/canteen/dashboard');
+      }, 1500);
+    } catch (error) {
+      console.error('Error creating surplus post:', error);
+      toast.error('Failed to create surplus post. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -183,8 +198,8 @@ const AddSurplusPage = () => {
         </div>
 
         <div className="pt-2">
-          <Button type="submit" className="w-full">
-            Submit Surplus
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit Surplus'}
           </Button>
         </div>
       </form>

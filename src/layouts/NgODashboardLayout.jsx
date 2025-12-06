@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import NgoProfile from '../components/ngo/NgoProfile';
 
 const ngoNavItems = [
   { label: 'Dashboard', to: '/ngo/dashboard' },
-  { label: 'Pickup Tracking', to: '/pickup-tracking' },
+  { label: 'Pickup Tracking', to: '/ngo/pickup-tracking' },
   { label: 'Analytics', to: '/analytics' },
 ];
 
@@ -13,7 +14,9 @@ const NgODashboardLayout = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="hidden w-64 flex-shrink-0 flex-col bg-white shadow-soft md:flex">
-        <div className="px-6 py-5 text-lg font-semibold text-secondary">AI Food Waste</div>
+        <div className="px-3 py-4">
+          <NgoProfile />
+        </div>
         <div className="px-6 pb-2 text-xs text-gray-500">NGO Portal</div>
         <nav className="mt-2 flex-1 space-y-1 px-3 pb-4">
           {ngoNavItems.map((item) => {

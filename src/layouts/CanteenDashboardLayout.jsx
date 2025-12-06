@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import CanteenProfile from '../components/canteen/CanteenProfile';
 
 const canteenNavItems = [
   { label: 'Dashboard', to: '/canteen/dashboard' },
   { label: 'Add Surplus', to: '/canteen/add-surplus' },
-  { label: 'Pickup Tracking', to: '/pickup-tracking' },
+  { label: 'Pickup Tracking', to: '/canteen/pickup-tracking' },
   { label: 'Analytics', to: '/analytics' },
 ];
 
@@ -14,7 +15,9 @@ const CanteenDashboardLayout = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="hidden w-64 flex-shrink-0 flex-col bg-white shadow-soft md:flex">
-        <div className="px-6 py-5 text-lg font-semibold text-secondary">AI Food Waste</div>
+        <div className="px-3 py-4">
+          <CanteenProfile />
+        </div>
         <div className="px-6 pb-2 text-xs text-gray-500">Canteen Portal</div>
         <nav className="mt-2 flex-1 space-y-1 px-3 pb-4">
           {canteenNavItems.map((item) => {

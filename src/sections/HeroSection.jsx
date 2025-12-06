@@ -12,7 +12,7 @@ const HeroSection = () => {
     <section
       id="hero"
       ref={ref}
-      className="relative flex flex-col items-center gap-10 pt-8 md:flex-row md:items-start"
+      className="relative flex flex-col items-center gap-10 md:flex-row md:items-start"
     >
       {/* Animated marquee background */}
       <div className="pointer-events-none absolute inset-x-0 -top-10 -z-10 opacity-40">
@@ -37,7 +37,7 @@ const HeroSection = () => {
           <span className="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />
           AI Food Waste Minimizer • Real-time surplus intelligence
         </div>
-        <h1 className="bg-gradient-to-r from-emerald-300 via-lime-200 to-cyan-300 bg-clip-text text-3xl font-semibold leading-tight text-transparent md:text-4xl lg:text-5xl">
+        <h1 className="bg-gradient-to-r from-emerald-300 via-lime-200 to-cyan-300 bg-clip-text text-4xl font-semibold leading-tight text-transparent md:text-5xl lg:text-6xl">
           A Futuristic Co-pilot for <span className="font-extrabold">Zero Food Waste</span>
         </h1>
         <p className="max-w-xl text-sm text-slate-200/80 md:text-base">

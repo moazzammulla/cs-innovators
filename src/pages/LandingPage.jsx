@@ -15,7 +15,7 @@ const LandingPage = () => {
       <BackgroundVideo />
       <Fireflies />
 
-      <main className="relative mx-auto flex max-w-6xl flex-col gap-28 px-4 pb-24 pt-24 md:px-8 lg:px-12">
+      <main className="relative mx-auto flex max-w-7xl flex-col gap-28 px-4 pb-0 pt-28 md:px-6 lg:px-8">
         <HeroSection />
         <AboutSection />
         <FeaturesSection />

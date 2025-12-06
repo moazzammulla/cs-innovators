@@ -21,11 +21,29 @@ const Button = ({
   variant = 'primary',
   size = 'md',
   className = '',
+  as,
   ...props
 }) => {
+  const Component = as || 'button';
+  const baseClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
+  
+  // If rendering as a link, remove button-specific props
+  if (as) {
+    const { type, ...linkProps } = props;
+    return (
+      <Component
+        className={baseClassName}
+        {...linkProps}
+      >
+        {children}
+      </Component>
+    );
+  }
+  
   return (
     <button
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+      type={props.type || 'button'}
+      className={baseClassName}
       {...props}
     >
       {children}

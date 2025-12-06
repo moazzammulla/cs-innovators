@@ -57,14 +57,14 @@ const Navbar = () => {
           onClick={() => scrollToSection('hero')}
           className="flex items-center gap-2"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-slate-950">
-            <span className="text-sm font-bold">AI</span>
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-slate-950">
+            <span className="text-base font-bold">AI</span>
           </div>
-          <span className="text-sm font-semibold text-emerald-100 md:text-base">
+          <span className="text-base font-semibold text-emerald-100 md:text-lg">
             Food Waste Minimizer
           </span>
         </button>
-        <nav className="hidden items-center gap-5 text-xs font-medium text-slate-300 md:flex">
+        <nav className="hidden items-center gap-5 text-sm font-medium text-slate-300 md:flex">
           {SECTIONS.map((s) => (
             <button
               key={s.id}
@@ -84,16 +84,16 @@ const Navbar = () => {
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
-            size="sm"
+            size="md"
             onClick={() => navigate('/login')}
-            className="hidden text-emerald-100 hover:bg-emerald-500/10 md:inline-flex"
+            className="hidden text-base text-emerald-100 hover:bg-emerald-500/10 md:inline-flex"
           >
             Login
           </Button>
           <Button
-            size="sm"
+            size="md"
             onClick={() => navigate('/signup')}
-            className="bg-emerald-500 text-slate-950 hover:bg-emerald-400"
+            className="bg-emerald-500 text-base text-slate-950 hover:bg-emerald-400"
           >
             Get Started
           </Button>

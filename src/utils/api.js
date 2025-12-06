@@ -17,23 +17,82 @@ export async function fetchTodaysSurplus() {
 
 export async function fetchCanteenSurplusPosts() {
   await delay(300);
-  return canteenSurplusPosts;
+  // Use data manager to get all posts for canteen
+  const { getAllSurplusPosts } = await import('./surplusDataManager');
+  const allPosts = getAllSurplusPosts();
+  
+  // If no posts, fallback to mock data
+  if (allPosts.length === 0) {
+    return canteenSurplusPosts;
+  }
+  
+  // Transform to match expected format
+  return allPosts
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .map((post) => ({
+      id: post.id,
+      foodName: post.foodName,
+      quantity: post.quantity,
+      status: post.status === 'Available' ? 'Posted' : post.status,
+      createdAt: new Date(post.createdAt).toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      }),
+    }));
 }
 
 export async function fetchNgoNearbySurplus() {
   await delay(300);
-  return ngoNearbySurplus;
+  // Use data manager to get available surplus posts
+  const { getAvailableSurplusPosts } = await import('./surplusDataManager');
+  const availablePosts = getAvailableSurplusPosts();
+  
+  // If no posts from data manager, fallback to mock data
+  if (availablePosts.length === 0) {
+    return ngoNearbySurplus;
+  }
+  
+  // Transform to match expected format
+  return availablePosts.map((post) => ({
+    id: post.id,
+    foodName: post.foodName,
+    quantity: post.quantity,
+    canteen: post.canteen || 'Green Leaf Canteen',
+    distance: post.distance || '1.2 km',
+    deadline: post.deadline || 'Today, 8:30 PM',
+    status: post.status,
+  }));
 }
 
 export async function fetchAnalytics() {
   await delay(300);
-  return { weeklySurplusData, foodSavedData, pickupHistory };
+  // Use data manager to get analytics from actual surplus posts
+  const { getAnalyticsData } = await import('./surplusDataManager');
+  const analyticsData = getAnalyticsData();
+  
+  // If no data, fallback to mock data
+  if (analyticsData.weeklySurplusData.length === 0 && analyticsData.pickupHistory.length === 0) {
+    return { weeklySurplusData, foodSavedData, pickupHistory };
+  }
+  
+  return analyticsData;
 }
 
 export async function createSurplusPost(payload) {
   await delay(400);
-  // Normally you would POST to backend; we just echo the payload.
-  return { id: Date.now(), ...payload };
+  // Use data manager to create and save the post
+  const { createSurplusPost: createPost } = await import('./surplusDataManager');
+  const newPost = createPost({
+    foodName: payload.foodName,
+    quantity: payload.quantity,
+    preparedTime: payload.preparedTime,
+    vegType: payload.vegType,
+    image: payload.image,
+    safetyChecklist: payload.safetyChecklist,
+  });
+  return newPost;
 }
 
 // Base URL for Mockoon API (update this to your Mockoon server URL)

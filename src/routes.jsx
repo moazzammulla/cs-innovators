@@ -89,6 +89,22 @@ export function AppRoutes() {
       ),
     },
     {
+      path: '/canteen/pickup-tracking',
+      element: (
+        <CanteenRoute>
+          <PickupTrackingPage />
+        </CanteenRoute>
+      ),
+    },
+    {
+      path: '/ngo/pickup-tracking',
+      element: (
+        <NgORoute>
+          <PickupTrackingPage />
+        </NgORoute>
+      ),
+    },
+    {
       path: '/pickup-tracking',
       element: (
         <PrivateDashboardRoute>

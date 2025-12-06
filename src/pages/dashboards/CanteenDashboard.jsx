@@ -26,18 +26,22 @@ const CanteenDashboard = () => {
   const [aiRecommendation, setAiRecommendation] = useState(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
 
+  const loadData = async () => {
+    const [surplus, recentPosts, analytics] = await Promise.all([
+      fetchTodaysSurplus(),
+      fetchCanteenSurplusPosts(),
+      fetchAnalytics(),
+    ]);
+    setTodaySurplus(surplus);
+    setPosts(recentPosts);
+    setWeeklyData(analytics.weeklySurplusData);
+  };
+
   useEffect(() => {
-    async function load() {
-      const [surplus, recentPosts, analytics] = await Promise.all([
-        fetchTodaysSurplus(),
-        fetchCanteenSurplusPosts(),
-        fetchAnalytics(),
-      ]);
-      setTodaySurplus(surplus);
-      setPosts(recentPosts);
-      setWeeklyData(analytics.weeklySurplusData);
-    }
-    load();
+    loadData();
+    // Refresh every 5 seconds to get new posts
+    const interval = setInterval(loadData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   return (

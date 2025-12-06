@@ -27,9 +27,24 @@ const LoginPage = () => {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    
+    // Save email to profile based on role
+    if (form.email) {
+      try {
+        const { getCanteenProfile, getNgoProfile } = await import('../utils/profileManager');
+        if (role === 'canteen') {
+          getCanteenProfile(form.email); // This will update the email in profile
+        } else {
+          getNgoProfile(form.email); // This will update the email in profile
+        }
+      } catch (error) {
+        console.error('Error updating profile:', error);
+      }
+    }
+    
     toast.success(`Logged in as ${role === 'canteen' ? 'Canteen' : 'NGO'}`);
     navigate(role === 'canteen' ? '/canteen/dashboard' : '/ngo/dashboard');
   };
