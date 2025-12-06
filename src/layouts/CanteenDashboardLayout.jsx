@@ -13,12 +13,12 @@ const CanteenDashboardLayout = ({ children }) => {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-64 flex-shrink-0 flex-col bg-white shadow-soft md:flex">
+    <div className="flex min-h-screen bg-slate-950">
+      <aside className="hidden w-64 flex-shrink-0 flex-col glass-card border-r border-emerald-400/20 shadow-[0_0_20px_rgba(16,185,129,0.1)] md:flex">
         <div className="px-3 py-4">
           <CanteenProfile />
         </div>
-        <div className="px-6 pb-2 text-xs text-gray-500">Canteen Portal</div>
+        <div className="px-6 pb-2 text-xs text-emerald-300/60 font-medium uppercase tracking-wide">Canteen Portal</div>
         <nav className="mt-2 flex-1 space-y-1 px-3 pb-4">
           {canteenNavItems.map((item) => {
             const active = location.pathname === item.to;
@@ -26,10 +26,10 @@ const CanteenDashboardLayout = ({ children }) => {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                className={`block rounded-lg px-3 py-2 text-sm font-medium transition-all ${
                   active
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-400/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
+                    : 'text-gray-300 hover:bg-emerald-500/10 hover:text-emerald-200'
                 }`}
               >
                 {item.label}
@@ -38,10 +38,10 @@ const CanteenDashboardLayout = ({ children }) => {
           })}
         </nav>
       </aside>
-      <div className="flex min-h-screen flex-1 flex-col">
-        <header className="flex items-center justify-between bg-white px-4 py-3 shadow-soft md:hidden">
-          <span className="text-base font-semibold text-secondary">Canteen Dashboard</span>
-          <span className="text-xs text-gray-500">AI Food Waste</span>
+      <div className="flex min-h-screen flex-1 flex-col bg-slate-950">
+        <header className="flex items-center justify-between glass-card border-b border-emerald-400/20 px-4 py-3 md:hidden">
+          <span className="text-base font-semibold bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">Canteen Dashboard</span>
+          <span className="text-xs text-gray-400">AI Food Waste</span>
         </header>
         <main className="flex-1 px-4 py-6 md:px-8 lg:px-10">{children}</main>
       </div>

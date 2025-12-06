@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import DashboardCard from '../../components/ui/DashboardCard';
 import StatusBadge from '../../components/ui/StatusBadge';
 import ChartComponent from '../../components/charts/ChartComponent';
@@ -14,6 +15,7 @@ import {
   fetchNgosByPincode,
 } from '../../utils/api';
 import { recommendBestNgo, isAIServiceAvailable } from '../../utils/aiService';
+import { fadeInUp, staggerContainer } from '../../utils/motionPresets';
 
 const CanteenDashboard = () => {
   const [todaySurplus, setTodaySurplus] = useState(0);
@@ -46,87 +48,167 @@ const CanteenDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+      <motion.div
+        className="flex flex-col justify-between gap-3 md:flex-row md:items-center"
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+      >
         <div>
-          <h1 className="text-xl font-semibold text-secondary">Canteen Dashboard</h1>
-          <p className="text-xs text-gray-500">
+          <div className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-medium text-emerald-300 ring-1 ring-emerald-400/40 mb-2">
+            <span className="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />
+            AI-Powered Dashboard • Real-time insights
+          </div>
+          <h1 className="bg-gradient-to-r from-emerald-300 via-lime-200 to-cyan-300 bg-clip-text text-3xl font-semibold leading-tight text-transparent md:text-4xl">
+            Canteen Dashboard
+          </h1>
+          <p className="text-sm text-gray-400 mt-2">
             View today&apos;s AI predicted surplus and manage your surplus posts.
           </p>
         </div>
-        <Button as={Link} to="/canteen/add-surplus" className="w-full md:w-auto">
-          Add Surplus Food
-        </Button>
-      </div>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            as={Link}
+            to="/canteen/add-surplus"
+            className="w-full bg-emerald-500 text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:bg-emerald-400 md:w-auto"
+          >
+            Add Surplus Food
+          </Button>
+        </motion.div>
+      </motion.div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <DashboardCard
-          title="Today&apos;s AI Predicted Surplus"
-          value={`${todaySurplus} kg`}
-          subtitle="Based on historical patterns and live signals (mock)"
-        />
-        <DashboardCard
-          title="Active Surplus Posts"
-          value={posts.filter((p) => p.status !== 'Delivered').length}
-          subtitle="Awaiting NGO assignment or pickup"
-        />
-        <DashboardCard
-          title="Meals Saved This Week"
-          value={320}
-          subtitle="Estimated from delivered surplus"
-        />
-      </div>
+      <motion.div
+        className="grid gap-4 md:grid-cols-3"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={fadeInUp}>
+          <div className="glass-card group relative overflow-hidden rounded-2xl border border-emerald-400/30 p-5 shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:border-emerald-400/50">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-400/10 blur-2xl opacity-0 transition-opacity group-hover:opacity-100" />
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-300/80 mb-2">
+              Today&apos;s AI Predicted Surplus
+            </p>
+            <p className="text-3xl font-semibold bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
+              {todaySurplus} kg
+            </p>
+            <p className="text-xs text-gray-400 mt-2">Based on historical patterns and live signals</p>
+          </div>
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <div className="glass-card group relative overflow-hidden rounded-2xl border border-cyan-400/30 p-5 shadow-[0_0_20px_rgba(34,211,238,0.2)] transition-all hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] hover:border-cyan-400/50">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-cyan-400/10 blur-2xl opacity-0 transition-opacity group-hover:opacity-100" />
+            <p className="text-xs font-medium uppercase tracking-wide text-cyan-300/80 mb-2">
+              Active Surplus Posts
+            </p>
+            <p className="text-3xl font-semibold bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
+              {posts.filter((p) => p.status !== 'Delivered').length}
+            </p>
+            <p className="text-xs text-gray-400 mt-2">Awaiting NGO assignment or pickup</p>
+          </div>
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <div className="glass-card group relative overflow-hidden rounded-2xl border border-lime-400/30 p-5 shadow-[0_0_20px_rgba(132,204,22,0.2)] transition-all hover:shadow-[0_0_30px_rgba(132,204,22,0.3)] hover:border-lime-400/50">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-lime-400/10 blur-2xl opacity-0 transition-opacity group-hover:opacity-100" />
+            <p className="text-xs font-medium uppercase tracking-wide text-lime-300/80 mb-2">
+              Meals Saved This Week
+            </p>
+            <p className="text-3xl font-semibold bg-gradient-to-r from-lime-300 to-emerald-300 bg-clip-text text-transparent">
+              320+
+            </p>
+            <p className="text-xs text-gray-400 mt-2">Estimated from delivered surplus</p>
+          </div>
+        </motion.div>
+      </motion.div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="card lg:col-span-2">
-          <div className="mb-3 flex items-center justify-between text-xs">
-            <p className="font-medium text-secondary">Recent Surplus Posts</p>
-            <span className="text-gray-400">Mock data</span>
+      <motion.div
+        className="grid gap-4 lg:grid-cols-3"
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.2 }}
+      >
+        <motion.div
+          className="glass-card lg:col-span-2 rounded-2xl border border-emerald-400/20 p-5 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
+          whileHover={{ borderColor: 'rgba(16,185,129,0.4)', boxShadow: '0_0_30px_rgba(16,185,129,0.25)' }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-emerald-200">Recent Surplus Posts</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Track your food surplus submissions</p>
+            </div>
+            <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-300 ring-1 ring-emerald-400/30">
+              Live
+            </span>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-gray-100 text-[11px] text-gray-500">
-                  <th className="py-2 pr-4 font-medium">Food</th>
-                  <th className="py-2 pr-4 font-medium">Quantity</th>
-                  <th className="py-2 pr-4 font-medium">Status</th>
-                  <th className="py-2 pr-4 font-medium">Created</th>
+                <tr className="border-b border-emerald-400/20 text-[11px] text-gray-400">
+                  <th className="py-3 pr-4 font-medium">Food</th>
+                  <th className="py-3 pr-4 font-medium">Quantity</th>
+                  <th className="py-3 pr-4 font-medium">Status</th>
+                  <th className="py-3 pr-4 font-medium">Created</th>
                 </tr>
               </thead>
               <tbody>
-                {posts.map((post) => (
-                  <tr key={post.id} className="border-b border-gray-50 text-[11px]">
-                    <td className="py-2 pr-4 font-medium text-gray-800">
+                {posts.map((post, idx) => (
+                  <motion.tr
+                    key={post.id}
+                    className="border-b border-emerald-400/10 text-[11px] transition-colors hover:bg-emerald-500/5"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + idx * 0.05 }}
+                  >
+                    <td className="py-3 pr-4 font-medium text-gray-200">
                       {post.foodName}
                     </td>
-                    <td className="py-2 pr-4 text-gray-600">{post.quantity}</td>
-                    <td className="py-2 pr-4">
+                    <td className="py-3 pr-4 text-gray-300">{post.quantity}</td>
+                    <td className="py-3 pr-4">
                       <StatusBadge status={post.status} />
                     </td>
-                    <td className="py-2 pr-4 text-gray-500">{post.createdAt}</td>
-                  </tr>
+                    <td className="py-3 pr-4 text-gray-400">{post.createdAt}</td>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
-        <div className="card">
-          <p className="mb-2 text-xs font-medium text-secondary">
+        </motion.div>
+        <motion.div
+          className="glass-card rounded-2xl border border-cyan-400/20 p-5 shadow-[0_0_20px_rgba(34,211,238,0.15)]"
+          whileHover={{ borderColor: 'rgba(34,211,238,0.4)', boxShadow: '0_0_30px_rgba(34,211,238,0.25)' }}
+          transition={{ duration: 0.3 }}
+        >
+          <p className="mb-3 text-sm font-semibold text-cyan-200">
             Weekly Surplus (kg)
           </p>
           <ChartComponent type="bar" data={weeklyData} dataKey="value" nameKey="name" />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Find Nearest NGO Section */}
-      <div className="card space-y-4">
+      <motion.div
+        className="glass-card space-y-4 rounded-2xl border border-emerald-400/20 p-6 shadow-[0_0_25px_rgba(16,185,129,0.2)]"
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.3 }}
+      >
         <div>
-          <h2 className="text-base font-semibold text-secondary">Find Nearest NGO</h2>
-          <p className="text-xs text-gray-500 mt-1">
+          <div className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-medium text-emerald-300 ring-1 ring-emerald-400/40 mb-3">
+            <span className="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />
+            AI-Powered Matching
+          </div>
+          <h2 className="text-xl font-semibold bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
+            Find Nearest NGO
+          </h2>
+          <p className="text-sm text-gray-400 mt-2">
             Search for NGOs in your area by entering your pincode
           </p>
         </div>
 
-        <form
+        <motion.form
           onSubmit={async (e) => {
             e.preventDefault();
             if (!pincode.trim()) {
@@ -169,7 +251,10 @@ const CanteenDashboard = () => {
               setIsLoadingNgos(false);
             }
           }}
-          className="flex gap-2"
+          className="flex gap-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
         >
           <div className="flex-1">
             <InputField
@@ -188,51 +273,85 @@ const CanteenDashboard = () => {
             />
           </div>
           <div className="flex items-end">
-            <Button type="submit" disabled={isLoadingNgos}>
-              {isLoadingNgos ? 'Searching...' : 'Search'}
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                type="submit"
+                disabled={isLoadingNgos}
+                className="bg-emerald-500 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:bg-emerald-400"
+              >
+                {isLoadingNgos ? 'Searching...' : 'Search'}
+              </Button>
+            </motion.div>
           </div>
-        </form>
+        </motion.form>
 
         {/* AI Recommendation */}
         {(isLoadingAI || aiRecommendation) && (
-          <div className="space-y-3">
+          <motion.div
+            className="space-y-3"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
             <AINgoRecommendation
               recommendation={aiRecommendation}
               isLoading={isLoadingAI}
             />
-          </div>
+          </motion.div>
         )}
 
         {/* NGO Results */}
         {ngos.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-medium text-secondary">
-                {aiRecommendation
-                  ? `All ${ngos.length} NGO${ngos.length > 1 ? 's' : ''} nearby`
-                  : `Found ${ngos.length} NGO${ngos.length > 1 ? 's' : ''} nearby`}
-              </p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-sm font-semibold text-emerald-200">
+                  {aiRecommendation
+                    ? `All ${ngos.length} NGO${ngos.length > 1 ? 's' : ''} nearby`
+                    : `Found ${ngos.length} NGO${ngos.length > 1 ? 's' : ''} nearby`}
+                </p>
+                <p className="text-[11px] text-gray-400 mt-0.5">Select an NGO to contact</p>
+              </div>
               {!isAIServiceAvailable() && (
-                <span className="text-[10px] text-gray-400">
-                  AI recommendations unavailable
+                <span className="rounded-full bg-yellow-500/10 px-2 py-1 text-[10px] text-yellow-300 ring-1 ring-yellow-400/30">
+                  AI unavailable
                 </span>
               )}
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {ngos.map((ngo) => (
-                <NgoCard key={ngo.id} ngo={ngo} />
+            <motion.div
+              className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
+              {ngos.map((ngo, idx) => (
+                <motion.div
+                  key={ngo.id}
+                  variants={fadeInUp}
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                >
+                  <NgoCard ngo={ngo} />
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
 
         {searchError && ngos.length === 0 && (
-          <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-3 text-xs text-yellow-800">
+          <motion.div
+            className="rounded-lg bg-yellow-500/10 border border-yellow-400/30 p-3 text-xs text-yellow-300 ring-1 ring-yellow-400/20"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             {searchError}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };

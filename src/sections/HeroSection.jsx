@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Button from '../components/ui/Button';
 import { fadeInUp } from '../utils/motionPresets';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   const ref = React.useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const yParallax = useTransform(scrollYProgress, [0, 1], [0, -80]);
@@ -46,7 +48,11 @@ const HeroSection = () => {
         </p>
         <div className="flex flex-col gap-3 text-sm sm:flex-row">
           <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }}>
-            <Button size="lg" className="w-full bg-emerald-500 text-slate-950 shadow-[0_0_40px_rgba(16,185,129,0.45)]">
+            <Button 
+              size="lg" 
+              className="w-full bg-emerald-500 text-slate-950 shadow-[0_0_40px_rgba(16,185,129,0.45)]"
+              onClick={() => navigate('/login?role=ngo')}
+            >
               Start as NGO
             </Button>
           </motion.div>
@@ -55,6 +61,7 @@ const HeroSection = () => {
               size="lg"
               variant="ghost"
               className="w-full border border-emerald-400/40 bg-emerald-500/5 text-emerald-200"
+              onClick={() => navigate('/login?role=canteen')}
             >
               Explore Canteen Mode
             </Button>

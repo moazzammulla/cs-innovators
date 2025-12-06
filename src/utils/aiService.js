@@ -4,13 +4,13 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-// Use gemini-1.5-flash as it's the only model supported in free tier API keys
-const DEFAULT_MODEL = 'gemini-2.0-flash';
+// Use gemini-1.5-pro (high performance model)
+const DEFAULT_MODEL = 'gemini-1.5-pro';
 
 /**
  * Get the Gemini model instance
- * Uses gemini-1.5-flash (free tier compatible)
- * @param {string} modelName - Model name (defaults to gemini-1.5-flash)
+ * Uses gemini-1.5-pro (high performance model)
+ * @param {string} modelName - Model name (defaults to gemini-1.5-pro)
  * @returns {GenerativeModel} Model instance
  */
 function getModel(modelName = DEFAULT_MODEL) {
@@ -19,8 +19,8 @@ function getModel(modelName = DEFAULT_MODEL) {
     return null;
   }
 
-  // Always use gemini-1.5-flash for free tier
-  return genAI.getGenerativeModel({ model: DEFAULT_MODEL });
+  // Use gemini-1.5-pro
+  return genAI.getGenerativeModel({ model: modelName });
 }
 
 /**
@@ -71,7 +71,7 @@ function parseJSONResponse(text) {
  * Generate AI response from a prompt
  * @param {string} prompt - The prompt to send to AI
  * @param {Object} options - Additional options
- * @param {string} options.model - Model name (default: 'gemini-1.5-flash' - free tier compatible)
+ * @param {string} options.model - Model name (default: 'gemini-1.5-pro')
  * @param {number} options.temperature - Temperature for generation (0-1)
  * @param {number} options.maxTokens - Maximum tokens to generate
  * @returns {Promise<string>} AI generated response
@@ -94,7 +94,7 @@ export async function generateAIResponse(prompt, options = {}) {
       maxOutputTokens: options.maxTokens || 2048,
     };
 
-    // Use the correct API format for gemini-1.5-flash
+    // Use the correct API format for Gemini models
     const result = await model.generateContent({
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       generationConfig,
@@ -108,7 +108,7 @@ export async function generateAIResponse(prompt, options = {}) {
     // Provide helpful error messages
     if (error.message?.includes('404') || error.message?.includes('not found')) {
       throw new Error(
-        `Model 'gemini-1.5-flash' not available. ` +
+        `Model 'gemini-1.5-pro' not available. ` +
         `Please verify your free tier API key has access to this model. ` +
         `Error: ${error.message}`
       );

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import Button from '../components/ui/Button';
 import InputField from '../components/ui/InputField';
 import GoogleAuthButton from '../components/ui/GoogleAuthButton';
+import { fadeInUp } from '../utils/motionPresets';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -50,75 +52,127 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="mx-auto mt-8 flex max-w-md flex-col rounded-2xl bg-white p-6 shadow-soft md:mt-16">
-      <div className="mb-4 flex rounded-full bg-gray-100 p-1 text-xs font-medium">
-        <button
-          type="button"
-          onClick={() => setRole('canteen')}
-          className={`flex-1 rounded-full px-3 py-2 transition ${
-            role === 'canteen' ? 'bg-white text-secondary shadow-sm' : 'text-gray-500'
-          }`}
-        >
-          Canteen Login
-        </button>
-        <button
-          type="button"
-          onClick={() => setRole('ngo')}
-          className={`flex-1 rounded-full px-3 py-2 transition ${
-            role === 'ngo' ? 'bg-white text-secondary shadow-sm' : 'text-gray-500'
-          }`}
-        >
-          NGO Login
-        </button>
+    <motion.div
+      className="mx-auto mt-8 flex max-w-md flex-col md:mt-16"
+      variants={fadeInUp}
+      initial="hidden"
+      animate="visible"
+    >
+      <div className="glass-card group relative overflow-hidden rounded-3xl border border-emerald-400/30 p-8 shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
+        
+        <div className="relative z-10">
+          <div className="mb-6 text-center">
+            <div className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-medium text-emerald-300 ring-1 ring-emerald-400/40 mb-3">
+              <span className="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />
+              AI Food Waste Minimizer
+            </div>
+            <h2 className="bg-gradient-to-r from-emerald-300 via-lime-200 to-cyan-300 bg-clip-text text-2xl font-semibold text-transparent md:text-3xl">
+              Welcome back, {role === 'canteen' ? 'Canteen' : 'NGO'} partner
+            </h2>
+            <p className="mt-2 text-sm text-gray-300">
+              Log in to manage surplus, accept pickups, and view live analytics.
+            </p>
+          </div>
+
+          <div className="mb-6 flex rounded-full bg-slate-900/60 p-1 text-xs font-medium ring-1 ring-emerald-400/20">
+            <motion.button
+              type="button"
+              onClick={() => setRole('canteen')}
+              className={`flex-1 rounded-full px-4 py-2.5 transition-all ${
+                role === 'canteen'
+                  ? 'bg-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)] ring-1 ring-emerald-400/30'
+                  : 'text-gray-400 hover:text-gray-300'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Canteen Login
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={() => setRole('ngo')}
+              className={`flex-1 rounded-full px-4 py-2.5 transition-all ${
+                role === 'ngo'
+                  ? 'bg-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)] ring-1 ring-emerald-400/30'
+                  : 'text-gray-400 hover:text-gray-300'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              NGO Login
+            </motion.button>
+          </div>
+          <motion.form
+            onSubmit={handleSubmit}
+            className="space-y-4 text-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <InputField
+              label="Email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              error={errors.email}
+            />
+            <InputField
+              label="Password"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              error={errors.password}
+            />
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                type="submit"
+                className="mt-2 w-full bg-emerald-500 text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:bg-emerald-400"
+              >
+                Login
+              </Button>
+            </motion.div>
+          </motion.form>
+
+          <div className="my-6 flex items-center gap-3 text-[11px]">
+            <div className="h-px flex-1 bg-emerald-400/20" />
+            <span className="text-gray-400">or</span>
+            <div className="h-px flex-1 bg-emerald-400/20" />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <GoogleAuthButton
+              onClick={() => toast.success('Google login coming soon (mock)')}
+            />
+          </motion.div>
+
+          <motion.p
+            className="mt-6 text-center text-[11px] text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            Don&apos;t have an account?{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/signup')}
+              className="font-medium text-emerald-300 underline-offset-2 hover:text-emerald-200 hover:underline transition-colors"
+            >
+              Create an account
+            </button>
+          </motion.p>
+        </div>
       </div>
-      <h2 className="mb-1 text-lg font-semibold text-secondary">
-        Welcome back, {role === 'canteen' ? 'Canteen' : 'NGO'} partner
-      </h2>
-      <p className="mb-4 text-xs text-gray-500">
-        Log in to manage surplus, accept pickups, and view live analytics.
-      </p>
-      <form onSubmit={handleSubmit} className="space-y-3 text-sm">
-        <InputField
-          label="Email"
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="you@example.com"
-          error={errors.email}
-        />
-        <InputField
-          label="Password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          placeholder="••••••••"
-          error={errors.password}
-        />
-        <Button type="submit" className="mt-2 w-full">
-          Login
-        </Button>
-      </form>
-      <div className="my-4 flex items-center gap-2 text-[11px] text-gray-400">
-        <div className="h-px flex-1 bg-gray-200" />
-        <span>or</span>
-        <div className="h-px flex-1 bg-gray-200" />
-      </div>
-      <GoogleAuthButton
-        onClick={() => toast.success('Google login coming soon (mock)')}
-      />
-      <p className="mt-4 text-center text-[11px] text-gray-500">
-        Don&apos;t have an account?{' '}
-        <button
-          type="button"
-          onClick={() => navigate('/signup')}
-          className="font-medium text-primary underline-offset-2 hover:underline"
-        >
-          Create an account
-        </button>
-      </p>
-    </div>
+    </motion.div>
   );
 };
 
